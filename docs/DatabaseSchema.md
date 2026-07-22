@@ -18,10 +18,13 @@ purpose:
 | updated_at | TIMESTAMP    |
 | last_login | TIMESTAMP    |
 
+### Indexes
+- email (UNIQUE index)
+- phone (UNIQUE index)
 
 ### Business rules:
 - Email must be unique
-- User must verify before booking
+- User must verify email before booking
 - Dob is mandatory
 - Can book multiple tickets
 
@@ -46,6 +49,8 @@ purpose:
 | created_at       | TIMESTAMP    | YES      |
 | updated_at       | TIMESTAMP    |
 
+### Indexes
+- title (INDEX)
 
 # Theatre
 
@@ -54,17 +59,20 @@ purpose:
 
 | Column          | Type         | Not Null | Unique | Primary Key | Auto Increment | Foreign Key | DEFAULT |
 |-----------------|--------------|----------|--------|-------------|----------------|-------------|---------|
-| id              | BIGINT       |          |        | YES         | YES            |
-| name            | VARCHAR(100) | YES      |
-| address         | VARCHAR(255) | YES      |
-| phone           | VARCHAR(25)  | YES      | YES    |
-| email           | VARCHAR(255) | YES      | YES    |
-| owner_id        | BIGINT       | YES      |        |             |                | YES         |
-| verified_status | VARCHAR(25)  | YES      |
-| license_number  | VARCHAR(255) | YES      | YES    |
-| created_at      | TIMESTAMP    | YES      |
-| updated_at      | TIMESTAMP    |
-| status          | VARCHAR(25)  | YES      |
+| id              | BIGINT       |          |        | YES         | YES            |             |         |
+| name            | VARCHAR(100) | YES      |        |             |                |             |         |
+| address         | VARCHAR(255) | YES      |        |             |                |             |         |
+| phone           | VARCHAR(25)  | YES      | YES    |             |                |             |         |
+| email           | VARCHAR(255) | YES      | YES    |             |                |             |         |
+| owner_id        | BIGINT       | YES      |        |             |                | YES         |         |
+| verified_status | VARCHAR(25)  | YES      |        |             |                |             |         |
+| license_number  | VARCHAR(255) | YES      | YES    |             |                |             |         |
+| created_at      | TIMESTAMP    | YES      |        |             |                |             |         |
+| updated_at      | TIMESTAMP    |          |        |             |                |             |         |
+| status          | VARCHAR(25)  | YES      |        |             |                |             |         |
+
+### Indexes
+- name (INDEX)
 
 ### Business rules:
 - Theatre must be verified before creating show
@@ -86,6 +94,10 @@ purpose:
 | created_at    | TIMESTAMP   | YES      |
 | updated_at    | TIMESTAMP   |
 
+
+### Composite Unique Constraint:
+- UNIQUE(theatre_id, screen)
+
 ### Business rules:
 - Screen belong to only one theatre
 - Seat number must be unique within a screen
@@ -103,6 +115,11 @@ purpose:
 | screen_id   | BIGINT      | YES      |        |             |                | YES         |
 | created_at  | TIMESTAMP   | YES      |
 | updated_at  | TIMESTAMP   |
+
+Seat
+
+### Composite Unique Constraints:
+- UNIQUE(screen_id, seat_number)
 
 ### Business rules:
 - A seat cannot be booked twice for the same show
@@ -149,10 +166,10 @@ purpose:
 
 ### Business rule:
 - One booking belongs to one show
-- One booking can have multiple payment attempts
-- Only one payment can be successful
+- One booking can have multiple payment attempts.
+- Only one payment can be successful.
 - One booking belongs to one user
-- One booking can contain multiple seats.
+- A booking can contain multiple seats
 - Booking status: PENDING, CONFIRMED, CANCELLED
 
 # BookedSeat
@@ -188,14 +205,15 @@ Purpose:
 | Column         | Type      | Not Null | Unique | Primary Key | Auto Increment | Foreign Key | DEFAULT |
 |----------------|-----------|----------|--------|-------------|----------------|-------------|---------|
 | id             | BIGINT    |          |        | YES         | YES            |
-| ticket_id      | BIGINT    | YES      |        |             |                | YES         |
+| ticket_id      | BIGINT    | YES      | YES    |             |                | YES         |
 | theatre_rating | INT       | YES      |
 | movie_rating   | INT       | YES      |
 | comment        | TEXT      |
 | created_at     | TIMESTAMP | YES      |
 
 ### Business rules:
-- Ratings must be between 1-5
+- Rating must be between 1-5
+- Only one feedback per ticket
 
 # Payment
 
@@ -214,6 +232,6 @@ Purpose:
 | status           | VARCHAR(25)   | YES      |
 
 ### Business rules:
-- One payment belongs to one booking
-- Ticket is generated only after successful payment
-- One booking can have one successful payment and multiple failed payments
+- Every payment belongs to one booking.
+- A booking can have multiple payment attempts.
+- Ticket is generated only after a successful payment.
