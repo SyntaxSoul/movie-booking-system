@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <include file="001-create-user-table.xml" relativeToChangelogFile="true"/>
+    <include file="003-create-theatre-table.xml" relativeToChangelogFile="true"/>
+    <include file="004-create-screen-table.xml" relativeToChangelogFile="true"/>
+    <include file="005-create-seat-table.xml" relativeToChangelogFile="true"/>
+    <include file="002-create-movie-table.xml" relativeToChangelogFile="true"/>
+    <include file="006-create-show-table.xml" relativeToChangelogFile="true"/>
+    <include file="007-create-booking-table.xml" relativeToChangelogFile="true"/>
+    <include file="008-create-booked_seat-table.xml" relativeToChangelogFile="true"/>
+    <include file="009-create-ticket-table.xml" relativeToChangelogFile="true"/>
+    <include file="010-create-feedback-table.xml" relativeToChangelogFile="true"/>
+    <include file="011-create-payment-table.xml" relativeToChangelogFile="true"/>
+
+    <!-- We need to arrange the above file inclusion in proper order to prevent table or column not found error while creating foreign keys  -->
+    <!-- Ex: If we try to create screen before creating theatre the operation will fail as the theatre_id col in screen is depended on theatre table -->
+
+</databaseChangeLog>

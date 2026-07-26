@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="004-create-screen-table" author="Vinayak">
+        <createTable tableName="screen">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="screen_number" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="theatre_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="capacity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="screen_name" type="VARCHAR(20)"/>
+            <column name="screen_type" type="VARCHAR(25)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                constraintName="fk_screen_theatre"
+                baseTableName="screen"
+                baseColumnNames="theatre_id"
+                referencedTableName="theatre"
+                referencedColumnNames="id"
+        />
+        <rollback>
+            <dropTable tableName="screen"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

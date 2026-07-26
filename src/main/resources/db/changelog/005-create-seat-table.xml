@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="005-create-seat-table" author="Vinayak">
+        <createTable tableName="seat">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="seat_number" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="seat_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="screen_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP"/>
+
+        </createTable>
+        <addForeignKeyConstraint
+                constraintName="fk_seat_screen"
+                baseTableName="seat"
+                baseColumnNames="screen_id"
+                referencedTableName="screen"
+                referencedColumnNames="id"
+        />
+        <addUniqueConstraint
+                constraintName="uq_seat_screen_id_seat_number"
+                tableName="seat"
+                columnNames="screen_id, seat_number"
+        />
+        <rollback>
+            <dropTable tableName="seat"/>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>

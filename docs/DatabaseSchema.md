@@ -109,12 +109,12 @@ purpose:
 
 | Column      | Type        | Not Null | Unique | Primary Key | Auto Increment | Foreign Key | DEFAULT |
 |-------------|-------------|----------|--------|-------------|----------------|-------------|---------|
-| id          | BIGINT      |          |        | YES         | YES            |
-| seat_number | VARCHAR(10) | YES      |
-| seat_type   | VARCHAR(20) |
-| screen_id   | BIGINT      | YES      |        |             |                | YES         |
-| created_at  | TIMESTAMP   | YES      |
-| updated_at  | TIMESTAMP   |
+| id          | BIGINT      |          |        | YES         | YES            |             |         |
+| seat_number | VARCHAR(10) | YES      |        |             |                |             |         |
+| seat_type   | VARCHAR(20) | YES      |        |             |                |             |         |
+| screen_id   | BIGINT      | YES      |        |             |                | YES         |         |
+| created_at  | TIMESTAMP   | YES      |        |             |                |             |         |
+| updated_at  | TIMESTAMP   |          |        |             |                |             |         |
 
 Seat
 
@@ -183,6 +183,9 @@ Purpose:
 | price      | DECIMAL(10,2) | YES      |
 | seat_id    | BIGINT        | YES      |        |             |                | YES         |
 | booking_id | BIGINT        | YES      |        |             |                | YES         |
+
+### Composite Unique Constraint:
+- UNIQUE(booking_id, seat_id)
 
 # Ticket
 
