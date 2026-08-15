@@ -4,7 +4,6 @@ import enums.ShowStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class Show {
     private final String id;
