@@ -10,8 +10,8 @@ public class Show {
     private final String id;
     private String movieId;
     private String screenId;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private ShowStatus status;
     private BigDecimal price;
     private final LocalDateTime createdAt;
@@ -29,11 +29,11 @@ public class Show {
         return screenId;
     }
 
-    public LocalTime getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public LocalTime getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
@@ -61,11 +61,11 @@ public class Show {
         this.screenId = screenId;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
@@ -101,8 +101,8 @@ public class Show {
         private String id;
         private String movieId;
         private String screenId;
-        private LocalTime startTime;
-        private LocalTime endTime;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
         private ShowStatus status;
         private BigDecimal price;
         private LocalDateTime createdAt;
@@ -127,12 +127,12 @@ public class Show {
             return this;
         }
 
-        public Builder startTime(LocalTime startTime) {
+        public Builder startTime(LocalDateTime startTime) {
             this.startTime = startTime;
             return this;
         }
 
-        public Builder endTime(LocalTime endTime) {
+        public Builder endTime(LocalDateTime endTime) {
             this.endTime = endTime;
             return this;
         }

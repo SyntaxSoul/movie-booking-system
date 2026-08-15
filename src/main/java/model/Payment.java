@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class Payment {
     private final String id;
     private Currency currency;
+    private String transactionId;
     private final String bookingId;
     private BigDecimal amount;
     private final LocalDateTime paidAt;
@@ -18,6 +19,7 @@ public class Payment {
     public Payment(Builder builder) {
         this.id = builder.id;
         this.currency = builder.currency;
+        this.transactionId=builder.transactionId;
         this.bookingId = builder.bookingId;
         this.amount = builder.amount;
         this.paidAt = builder.paidAt;
@@ -53,6 +55,10 @@ public class Payment {
         return status;
     }
 
+    public String getTransactionId() {
+        return transactionId;
+    }
+
     public void setCurrency(Currency currency) {
         this.currency = currency;
     }
@@ -69,6 +75,10 @@ public class Payment {
         this.status = status;
     }
 
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -76,6 +86,7 @@ public class Payment {
     public static class Builder {
         private String id;
         private Currency currency;
+        private String transactionId;
         private String bookingId;
         private BigDecimal amount;
         private LocalDateTime paidAt;
@@ -93,6 +104,11 @@ public class Payment {
 
         public Builder currency(Currency currency) {
             this.currency = currency;
+            return this;
+        }
+
+        public Builder transactionId(String transactionId){
+            this.transactionId=transactionId;
             return this;
         }
 
@@ -125,6 +141,10 @@ public class Payment {
 
             if (currency == null) {
                 throw new IllegalStateException("Currency cannot be null");
+            }
+
+            if(transactionId == null || this.transactionId.isBlank()){
+                throw new IllegalStateException("Transaction ID connot be blank");
             }
 
             if (this.bookingId == null || this.bookingId.isBlank()) {
