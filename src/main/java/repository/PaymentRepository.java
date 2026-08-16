@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.PaymentStatus;
 import model.Payment;
 
@@ -20,10 +20,9 @@ public class PaymentRepository {
                 VALUES(?,?,?,?,?,?,?)
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
             int index = 1;
             ps.setString(index++, payment.getCurrency().name());
             ps.setLong(index++, Long.parseLong(payment.getTransactionId()));
@@ -36,17 +35,20 @@ public class PaymentRepository {
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                return Payment.builder()
-                        .id(String.valueOf(rs.getLong("id")))
-                        .currency(payment.getCurrency())
-                        .bookingId(payment.getBookingId())
-                        .amount(payment.getAmount())
-                        .paidAt(payment.getPaidAt())
-                        .gatewayResponse(payment.getGatewayResponse())
-                        .status(payment.getStatus())
-                        .build();
+                if (rs.next()) {
+                    return Payment.builder()
+                            .id(String.valueOf(rs.getLong("id")))
+                            .currency(payment.getCurrency())
+                            .bookingId(payment.getBookingId())
+                            .amount(payment.getAmount())
+                            .paidAt(payment.getPaidAt())
+                            .gatewayResponse(payment.getGatewayResponse())
+                            .status(payment.getStatus())
+                            .build();
+                }
             }
         }
+        throw new SQLException("Failed to save payment");
     }
 
     public void update(Payment payment) throws SQLException {
@@ -62,10 +64,9 @@ public class PaymentRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
             ps.setString(index++, payment.getCurrency().name());
@@ -85,10 +86,9 @@ public class PaymentRepository {
                 SELECT * FROM payment WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ps.setLong(1, Long.parseLong(id));
 
@@ -113,10 +113,9 @@ public class PaymentRepository {
         String sql = """
                 DELETE FROM payment WHERE id=?
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

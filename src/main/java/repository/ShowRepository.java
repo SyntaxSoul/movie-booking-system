@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.ShowStatus;
 import model.Show;
 
@@ -23,10 +23,9 @@ public class ShowRepository {
                 VALUES(?,?,?,?,?,?,?,?)
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
             int index = 1;
             ps.setLong(index++, Long.parseLong(show.getMovieId()));
             ps.setLong(index++, Long.parseLong(show.getScreenId()));
@@ -43,19 +42,22 @@ public class ShowRepository {
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                return Show.builder()
-                        .id(String.valueOf(rs.getLong("id")))
-                        .movidId(show.getMovieId())
-                        .screenId(show.getScreenId())
-                        .startTime(show.getStartTime())
-                        .endTime(show.getEndTime())
-                        .status(show.getStatus())
-                        .price(show.getPrice())
-                        .createdAt(show.getCreatedAt())
-                        .updatedAt(show.getUpdatedAt())
-                        .build();
+                if (rs.next()) {
+                    return Show.builder()
+                            .id(String.valueOf(rs.getLong("id")))
+                            .movidId(show.getMovieId())
+                            .screenId(show.getScreenId())
+                            .startTime(show.getStartTime())
+                            .endTime(show.getEndTime())
+                            .status(show.getStatus())
+                            .price(show.getPrice())
+                            .createdAt(show.getCreatedAt())
+                            .updatedAt(show.getUpdatedAt())
+                            .build();
+                }
             }
         }
+        throw new SQLException("Failed to save show");
     }
 
     public void update(Show show) throws SQLException {
@@ -72,10 +74,9 @@ public class ShowRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
             ps.setLong(index++, Long.parseLong(show.getMovieId()));
@@ -96,10 +97,9 @@ public class ShowRepository {
                 SELECT * FROM show WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -123,10 +123,9 @@ public class ShowRepository {
         String sql = """
                 DELETE FROM show WHERE id=?
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

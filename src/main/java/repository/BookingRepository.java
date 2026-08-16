@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.BookingStatus;
 import model.Booking;
 
@@ -22,10 +22,9 @@ public class BookingRepository {
                 VALUES(?,?,?,?,?,?,?)
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
             int index = 1;
             ps.setTimestamp(index++, Timestamp.valueOf(booking.getBookingTime()));
             ps.setBigDecimal(index++, booking.getTotalAmount());
@@ -40,18 +39,23 @@ public class BookingRepository {
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                return Booking.builder()
-                        .id(String.valueOf(rs.getLong("id")))
-                        .bookingTime(booking.getBookingTime())
-                        .totalAmount(booking.getTotalAmount())
-                        .showId(booking.getShowId())
-                        .userId(booking.getUserId())
-                        .status(booking.getStatus())
-                        .createdAt(booking.getCreatedAt())
-                        .updatedAt(booking.getUpdatedAt())
-                        .build();
+
+                if (rs.next()) {
+                    return Booking.builder()
+                            .id(String.valueOf(rs.getLong("id")))
+                            .bookingTime(booking.getBookingTime())
+                            .totalAmount(booking.getTotalAmount())
+                            .showId(booking.getShowId())
+                            .userId(booking.getUserId())
+                            .status(booking.getStatus())
+                            .createdAt(booking.getCreatedAt())
+                            .updatedAt(booking.getUpdatedAt())
+                            .build();
+                }
+
             }
         }
+        throw new SQLException("Failed to save booking");
     }
 
     public void update(Booking booking) throws SQLException {
@@ -67,10 +71,9 @@ public class BookingRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
 
@@ -91,10 +94,9 @@ public class BookingRepository {
                 SELECT * FROM booking WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -117,10 +119,9 @@ public class BookingRepository {
         String sql = """
                 DELETE FROM booking WHERE id=?
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import model.Feedback;
 
 import java.sql.*;
@@ -17,10 +17,9 @@ public class FeedbackRepository {
                 VALUES(?,?,?,?,?)
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
             int index = 1;
             ps.setLong(index++, Long.parseLong(feedback.getTicketId()));
             ps.setInt(index++, feedback.getTheatreRating());
@@ -30,16 +29,19 @@ public class FeedbackRepository {
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                return Feedback.builder()
-                        .id(String.valueOf(rs.getLong("id")))
-                        .ticketId(feedback.getTicketId())
-                        .theatreRating(feedback.getTheatreRating())
-                        .movieRating(feedback.getMovieRating())
-                        .comment(feedback.getComment())
-                        .createdAt(feedback.getCreatedAt())
-                        .build();
+                if (rs.next()) {
+                    return Feedback.builder()
+                            .id(String.valueOf(rs.getLong("id")))
+                            .ticketId(feedback.getTicketId())
+                            .theatreRating(feedback.getTheatreRating())
+                            .movieRating(feedback.getMovieRating())
+                            .comment(feedback.getComment())
+                            .createdAt(feedback.getCreatedAt())
+                            .build();
+                }
             }
         }
+        throw new SQLException("Failed to save feedback");
     }
 
     public void update(Feedback feedback) throws SQLException {
@@ -53,10 +55,9 @@ public class FeedbackRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
             ps.setLong(index++, Long.parseLong(feedback.getTicketId()));
@@ -74,10 +75,9 @@ public class FeedbackRepository {
                 SELECT * FROM feedback WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -98,10 +98,9 @@ public class FeedbackRepository {
         String sql = """
                 DELETE FROM feedback WHERE id=?
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

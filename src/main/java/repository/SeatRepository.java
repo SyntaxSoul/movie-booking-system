@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.SeatType;
 import model.Seat;
 
@@ -19,10 +19,9 @@ public class SeatRepository {
                 updated_at)
                 VALUES(?,?,?,?,?)
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
             int index = 1;
             ps.setLong(index++, Long.parseLong(seat.getSeatNumber()));
             ps.setString(index++, seat.getSeatType().name());
@@ -61,10 +60,9 @@ public class SeatRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             int index = 1;
             ps.setString(index++, seat.getSeatNumber());
             ps.setString(index++, seat.getSeatType().name());
@@ -81,10 +79,9 @@ public class SeatRepository {
                 SELECT * FROM seat WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -106,10 +103,9 @@ public class SeatRepository {
                 DELETE FROM seat WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

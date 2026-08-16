@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.Language;
 import enums.MovieCertificate;
 import enums.MovieGenre;
@@ -29,8 +29,9 @@ public class MovieRepository {
                 VALUES(?,?,?,?,?,?,?,?,?,?,?)
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
 
             int index = 1;
             ps.setString(index++, movie.getTitle());
@@ -87,10 +88,9 @@ public class MovieRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             // CreatedAt should not be updated/modified
             // As this is the update action need to update the updatedAt to current time
@@ -114,8 +114,9 @@ public class MovieRepository {
                 SELECT * FROM movie WHERE id=?
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -143,8 +144,9 @@ public class MovieRepository {
                 DELETE FROM movie WHERE id=?
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();

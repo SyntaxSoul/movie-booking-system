@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.Gender;
 import enums.UserStatus;
 import enums.UserType;
@@ -30,9 +30,9 @@ public class UserRepository {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
 
             int index = 1;
             ps.setString(index++, user.getName());
@@ -95,8 +95,9 @@ public class UserRepository {
                 id=?
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             int index = 1;
 
             ps.setString(index++, user.getName());
@@ -123,8 +124,9 @@ public class UserRepository {
                 SELECT * FROM user  WHERE id=?;
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ps.setLong(1, Long.parseLong(id));
 
@@ -155,8 +157,9 @@ public class UserRepository {
                 DELETE FROM user WHERE id=?;
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();

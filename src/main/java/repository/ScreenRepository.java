@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.ScreenType;
 import model.Screen;
 
@@ -22,10 +22,9 @@ public class ScreenRepository {
                 VALUES(?,?,?,?,?,?,?)
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
 
 
             int index = 1;
@@ -72,10 +71,9 @@ public class ScreenRepository {
                 WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
             ps.setString(index++, screen.getScreenNumber());
@@ -95,10 +93,9 @@ public class ScreenRepository {
                 SELECT * FROM screen WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
@@ -122,10 +119,9 @@ public class ScreenRepository {
         String sql = """
                 DELETE FROM screen WHERE id=?
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

@@ -1,11 +1,14 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.TheatreStatus;
 import enums.TheatreVerifiedStatus;
 import model.Theatre;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class TheatreRepository {
@@ -26,8 +29,9 @@ public class TheatreRepository {
                 VALUES(?,?,?,?,?,?,?,?,?,?);
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
             ps.setString(index++, theatre.getName());
@@ -46,21 +50,24 @@ public class TheatreRepository {
 
             ps.executeQuery();
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                return Theatre.builder()
-                        .id(rs.getString("id"))
-                        .name(theatre.getName())
-                        .address(theatre.getAddress())
-                        .phone(theatre.getPhone())
-                        .email(theatre.getEmail())
-                        .ownerId(theatre.getEmail())
-                        .verifiedStatus(theatre.getVerifiedStatus())
-                        .licenseNumber(theatre.getLicenseNumber())
-                        .createdAt(theatre.getCreatedAt())
-                        .updatedAt(theatre.getCreatedAt())
-                        .status(theatre.getStatus())
-                        .build();
+                if (rs.next()) {
+                    return Theatre.builder()
+                            .id(rs.getString("id"))
+                            .name(theatre.getName())
+                            .address(theatre.getAddress())
+                            .phone(theatre.getPhone())
+                            .email(theatre.getEmail())
+                            .ownerId(theatre.getEmail())
+                            .verifiedStatus(theatre.getVerifiedStatus())
+                            .licenseNumber(theatre.getLicenseNumber())
+                            .createdAt(theatre.getCreatedAt())
+                            .updatedAt(theatre.getCreatedAt())
+                            .status(theatre.getStatus())
+                            .build();
+                }
             }
         }
+        throw new SQLException("Failed to save theatre");
     }
 
     public void update(Theatre theatre) throws SQLException {
@@ -78,8 +85,9 @@ public class TheatreRepository {
                 status=?,
                 WHERE id=?
                 """;
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             int index = 1;
             ps.setString(index++, theatre.getName());
             ps.setString(index++, theatre.getAddress());
@@ -102,8 +110,9 @@ public class TheatreRepository {
                 SELECT * FROM user WHERE id=?;
                 """;
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
@@ -129,8 +138,9 @@ public class TheatreRepository {
     public void delete(String id) throws SQLException {
         String sql = "DELETE FROM user WHERE id=?;";
 
-        try (Connection con = DatabaseConfig.getConnection()) {
-            PreparedStatement ps = con.prepareStatement(sql);
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }

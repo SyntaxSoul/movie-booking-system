@@ -1,6 +1,6 @@
 package repository;
 
-import config.DatabaseConfig;
+import context.DbContext;
 import enums.TicketStatus;
 import model.Ticket;
 
@@ -17,10 +17,9 @@ public class TicketRepository {
                 VALUES(?,?,?,?)
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql, Statement.RETURN_GENERATED_KEYS)) {
             int index = 1;
             ps.setLong(index++, Long.parseLong(ticket.getBookingId()));
             ps.setTimestamp(index++, Timestamp.valueOf(ticket.getIssuedAt()));
@@ -29,15 +28,18 @@ public class TicketRepository {
 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
-                return Ticket.builder()
-                        .id(String.valueOf(rs.getLong("id")))
-                        .bookingId(ticket.getBookingId())
-                        .issuedAt(ticket.getIssuedAt())
-                        .status(ticket.getStatus())
-                        .qrCode(ticket.getQrCode())
-                        .build();
+                if (rs.next()) {
+                    return Ticket.builder()
+                            .id(String.valueOf(rs.getLong("id")))
+                            .bookingId(ticket.getBookingId())
+                            .issuedAt(ticket.getIssuedAt())
+                            .status(ticket.getStatus())
+                            .qrCode(ticket.getQrCode())
+                            .build();
+                }
             }
         }
+        throw new SQLException("Failed to save ticket");
     }
 
     public void update(Ticket ticket) throws SQLException {
@@ -51,10 +53,9 @@ public class TicketRepository {
                 id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             int index = 1;
             ps.setLong(index++, Long.parseLong(ticket.getBookingId()));
@@ -72,10 +73,9 @@ public class TicketRepository {
                 SELECT * FROM ticket WHERE id=?
                 """;
 
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
 
             ResultSet rs = ps.executeQuery();
 
@@ -96,10 +96,9 @@ public class TicketRepository {
         String sql = """
                 DELETE FROM ticket WHERE id=?
                 """;
-        try (Connection con =
-                     DatabaseConfig.getConnection();
-             PreparedStatement ps =
-                     con.prepareStatement(sql)) {
+        try (PreparedStatement ps =
+                     DbContext.getConnection().prepareStatement(
+                             sql)) {
             ps.setLong(1, Long.parseLong(id));
             ps.executeQuery();
         }
